@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Calcula cuánto te cuesta de verdad tener tu carro o tu moto en Colombia y cuánto deberías ganar para mantenerlo.">
+<title>¿Te alcanza para ese carro?</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap">
+<style>
+/* Layout: form column + sticky result column; stacks on phone. Theme: claro y alegre, siempre claro (cielo, sol, menta, coral). */
+:root{
+  --bg:#f3f9ff; --sky:#dff0ff; --sun:#ffe9a8; --surface:#ffffff; --ink:#2b3a55; --muted:#6b7a92; --line:#e3eaf5;
+  --plate:#ffd23f; --plate-ink:#5a3b00; --accent:#3ba7f5; --accent-soft:#eaf6ff;
+  --mint:#5fd3a5; --coral:#ff8a7a; --lilac:#b59cff;
+  --good:#2fb67c; --warn:#f2a20d; --bad:#f2615a;
+  --f-display:"Fredoka","Nunito",system-ui,sans-serif; --f-body:"Nunito",system-ui,sans-serif; --f-narrow:"Nunito",system-ui,sans-serif; --f-mono:"Fredoka",system-ui,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{background:radial-gradient(circle at 90% -10%,var(--sun) 0,transparent 420px),linear-gradient(180deg,var(--sky) 0,var(--bg) 520px);background-color:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;min-height:100vh}
+h1,h2,.total .num,.verdict .big,button.calc,.seg label{font-family:var(--f-display)}
+.wrap{max-width:1120px;margin:0 auto;padding-block:28px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header{display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
+.plate{align-self:flex-start;background:var(--plate);color:var(--plate-ink);font-family:var(--f-display);font-size:13px;letter-spacing:.08em;padding:5px 14px;border-radius:999px;font-weight:600;box-shadow:0 3px 0 #f0b400}
+h1{font-size:clamp(32px,5.5vw,52px);line-height:1.05;margin:0;font-weight:700;letter-spacing:-.01em;text-wrap:balance;color:var(--ink)}
+h1 em{font-style:normal;color:var(--accent)}
+.sunny{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.sunny svg{flex:none}
+.lead{color:var(--muted);max-width:60ch;margin:0}
+.grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:24px;align-items:start}
+@media (max-width:860px){.grid{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:24px;box-shadow:0 10px 30px -12px rgba(59,167,245,.25)}
+h2{font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin:0 0 14px;font-weight:600}
+form{display:flex;flex-direction:column;gap:20px}
+fieldset{border:0;padding:0;margin:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+@media (max-width:480px){fieldset{grid-template-columns:minmax(0,1fr)}}
+.full{grid-column:1/-1}
+label,.lbl{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600}
+.hint{font-weight:400;color:var(--muted);font-size:12px}
+input[type=text],input[type=number],select{font:inherit;font-size:15px;padding:11px 14px;border:2px solid var(--line);border-radius:14px;background:#fbfdff;color:var(--ink);width:100%}
+input[type=text]:focus,input[type=number]:focus,select:focus{border-color:var(--accent)}
+input:focus-visible,select:focus-visible,button:focus-visible,.seg label:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+.money{position:relative}
+.money span{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;pointer-events:none}
+.money input{padding-left:26px}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg label{flex:1 1 auto;flex-direction:row;align-items:center;justify-content:center;gap:6px;border:2px solid var(--line);border-radius:999px;padding:9px 14px;cursor:pointer;font-weight:600;background:#fbfdff;text-align:center;transition:transform .15s}
+.seg label:hover{transform:translateY(-1px)}
+.seg label small{font-weight:400;color:var(--muted);font-family:var(--f-narrow)}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg label:has(input:checked){background:var(--accent);border-color:var(--accent);color:var(--surface)}
+.seg label:has(input:checked) small{color:inherit;opacity:.85}
+.seg.big label{font-size:16px;padding:12px}
+.check{flex-direction:row;align-items:center;gap:10px;font-weight:600;cursor:pointer}
+.check input{width:18px;height:18px;accent-color:var(--accent)}
+.sub{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;padding:16px;border-radius:18px;background:var(--accent-soft)}
+@media (max-width:480px){.sub{grid-template-columns:minmax(0,1fr)}}
+.result{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);display:flex;flex-direction:column;gap:18px}
+.total{display:flex;flex-direction:column;gap:2px}
+.total .num{font-size:clamp(34px,5vw,46px);font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1.05}
+.total .per{color:var(--muted);font-size:13px}
+.rows{display:flex;flex-direction:column;gap:9px}
+.row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;font-size:14px}
+.row .v{font-variant-numeric:tabular-nums;font-weight:600;text-align:right}
+.bar{grid-column:1/-1;height:10px;border-radius:999px;background:var(--accent-soft);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:999px;transition:width .4s}
+.row:nth-child(4n+2) .bar i{background:var(--mint)}
+.row:nth-child(4n+3) .bar i{background:var(--coral)}
+.row:nth-child(4n+4) .bar i{background:var(--lilac)}
+.row .tag{font-size:11px;color:var(--muted);font-family:var(--f-narrow)}
+.verdict{border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:6px;background:linear-gradient(135deg,#fff4c9,#ffe3dc)}
+.verdict .big{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums}
+.verdict p{margin:0;font-size:13px;color:var(--muted)}
+.extra{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.mini{border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:2px;background:#ecfaf4}
+.mini + .mini{background:#f2eeff}
+.mini b{font-size:18px;font-variant-numeric:tabular-nums}
+.mini span{font-size:12px;color:var(--muted)}
+.check-income{display:flex;flex-direction:column;gap:8px}
+.pill{align-self:flex-start;font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;color:var(--surface)}
+.pill.ok{background:var(--good)} .pill.mid{background:var(--warn)} .pill.no{background:var(--bad)}
+button.calc{font-weight:600;font-size:18px;padding:15px;border-radius:999px;border:0;background:var(--plate);color:var(--plate-ink);cursor:pointer;box-shadow:0 5px 0 #f0b400;transition:transform .1s,box-shadow .1s}
+button.calc:hover{transform:translateY(-1px)}
+button.calc:active{transform:translateY(3px);box-shadow:0 2px 0 #f0b400}
+.note{font-size:12px;color:var(--muted);margin:0}
+.example{font-size:12px;color:var(--muted);background:var(--accent-soft);padding:6px 12px;border-radius:999px;align-self:flex-start}
+footer{margin-top:28px;font-size:12px;color:var(--muted);max-width:75ch}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+</style>
+<style>body{margin:0} [hidden]{display:none!important} img{max-width:100%}</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <span class="plate">CALCULADORA · 2026</span>
+    <div class="sunny">
+      <h1>¿Te alcanza para <em>ese carro</em>?</h1>
+      <svg width="64" height="64" viewBox="0 0 64 64" aria-hidden="true"><g stroke="#ffc21a" stroke-width="4" stroke-linecap="round"><line x1="32" y1="4" x2="32" y2="11"/><line x1="32" y1="53" x2="32" y2="60"/><line x1="4" y1="32" x2="11" y2="32"/><line x1="53" y1="32" x2="60" y2="32"/><line x1="12" y1="12" x2="17" y2="17"/><line x1="47" y1="47" x2="52" y2="52"/><line x1="52" y1="12" x2="47" y2="17"/><line x1="17" y1="47" x2="12" y2="52"/></g><circle cx="32" cy="32" r="15" fill="#ffd23f"/><circle cx="27" cy="30" r="1.8" fill="#5a3b00"/><circle cx="37" cy="30" r="1.8" fill="#5a3b00"/><path d="M26 36 q6 6 12 0" stroke="#5a3b00" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg>
+    </div>
+    <p class="lead">Mira lo que de verdad cuesta tener tu carro o tu moto cada mes, y cuánto deberías ganar para mantenerlo sin apretarte. Cambia los datos y el resultado se actualiza.</p>
+  </header>
+
+  <div class="grid">
+    <section class="card">
+      <h2>Datos del vehículo</h2>
+      <form id="f" novalidate>
+        <div class="seg big" role="radiogroup" aria-label="Tipo de vehículo">
+          <label><input type="radio" name="tipo" id="t-carro" value="carro" checked>Carro</label>
+          <label><input type="radio" name="tipo" id="t-moto" value="moto">Moto</label>
+        </div>
+
+        <fieldset>
+          <label>Marca<input type="text" id="marca" value="Mazda" autocomplete="off"></label>
+          <label>Modelo / línea<input type="text" id="modelo" value="2 Sedán" autocomplete="off"></label>
+          <label>Año<input type="number" id="anio" value="2021" min="1980" max="2027"></label>
+          <label>Cilindraje (cc)<input type="number" id="cc" value="1496" min="50" max="8000"></label>
+          <label>Combustible
+            <select id="comb">
+              <option value="corriente" selected>Gasolina corriente</option>
+              <option value="extra">Gasolina extra</option>
+              <option value="diesel">Diésel / ACPM</option>
+              <option value="gnv">Gas natural (GNV)</option>
+              <option value="hibrido">Híbrido</option>
+              <option value="electrico">Eléctrico</option>
+            </select>
+          </label>
+          <label>Ciudad
+            <select id="ciudad">
+              <option value="bogota">Bogotá</option>
+              <option value="medellin">Medellín</option>
+              <option value="cali" selected>Cali</option>
+              <option value="barranquilla">Barranquilla</option>
+              <option value="otra">Otra</option>
+            </select>
+          </label>
+        </fieldset>
+
+        <div class="lbl">¿Cuánto lo usas?
+          <div class="seg" role="radiogroup" aria-label="Uso mensual">
+            <label><input type="radio" name="uso" id="u1" value="400">Poco <small>~400 km/mes</small></label>
+            <label><input type="radio" name="uso" id="u2" value="1000" checked>Normal <small>~1.000 km</small></label>
+            <label><input type="radio" name="uso" id="u3" value="2200">Mucho <small>~2.200 km</small></label>
+            <label><input type="radio" name="uso" id="u4" value="3500">Demasiado <small>3.500+ km</small></label>
+          </div>
+        </div>
+
+        <fieldset>
+          <label class="full">Valor comercial hoy
+            <span class="hint">Lo que costaría comprarlo usado. Si lo dejas vacío, lo estimamos con el año.</span>
+            <div class="money"><span>$</span><input type="text" inputmode="numeric" id="valor" value="62.000.000"></div>
+          </label>
+          <label class="full">Parqueadero al mes
+            <span class="hint">Pon 0 si parqueas gratis en tu casa.</span>
+            <div class="money"><span>$</span><input type="text" inputmode="numeric" id="parq" value="120.000"></div>
+          </label>
+          <label class="check full"><input type="checkbox" id="seguro" checked>Incluir seguro todo riesgo</label>
+          <label class="check full"><input type="checkbox" id="lava" checked>Lo mando a lavar</label>
+        </fieldset>
+
+        <div class="sub" id="lavaBox">
+          <label>¿Cuánto vale la lavada?
+            <div class="money"><span>$</span><input type="text" inputmode="numeric" id="lavaVal" value="25.000"></div>
+          </label>
+          <label>¿Cada cuánto?
+            <select id="lavaFreq">
+              <option value="4.33">Cada semana</option>
+              <option value="2" selected>Cada 15 días</option>
+              <option value="1">Cada mes</option>
+              <option value="0.5">Cada 2 meses</option>
+              <option value="0.333">Cada 3 meses</option>
+            </select>
+          </label>
+        </div>
+
+        <label>Tu ingreso mensual (opcional)
+          <span class="hint">Para decirte si te alcanza. No se guarda en ningún lado.</span>
+          <div class="money"><span>$</span><input type="text" inputmode="numeric" id="ingreso" placeholder="Ej: 4.500.000"></div>
+        </label>
+
+        <button class="calc" type="submit">Calcular gastos</button>
+      </form>
+    </section>
+
+    <aside class="result" aria-live="polite">
+      <div class="card" style="display:flex;flex-direction:column;gap:18px">
+        <span class="example" id="exNote">Datos de ejemplo · cámbialos por los tuyos</span>
+        <div class="total">
+          <h2 style="margin:0" id="resTitle">Te cuesta al mes</h2>
+          <span class="num" id="tMes">$0</span>
+          <span class="per" id="tAnio">$0 al año</span>
+        </div>
+        <div class="rows" id="rows"></div>
+        <div class="verdict">
+          <span class="lbl" style="font-weight:600">Para tenerlo sano deberías ganar</span>
+          <span class="big" id="ganar">$0</span>
+          <p>Regla usada: el vehículo no debería llevarse más del 15% de lo que ganas al mes.</p>
+        </div>
+        <div class="check-income" id="incomeBox" hidden>
+          <span class="pill" id="pill"></span>
+          <p class="note" id="incomeTxt"></p>
+        </div>
+        <div class="extra">
+          <div class="mini"><b id="pierde">$0</b><span>pierde de valor al mes (no sale del bolsillo, pero es plata)</span></div>
+          <div class="mini"><b id="km">$0</b><span>te cuesta cada kilómetro</span></div>
+        </div>
+        <p class="note">Valores estimados. SOAT y tecnomecánica con tarifas oficiales 2026; gasolina con precios de noviembre de 2026. Impuesto, seguro y mantenimiento son promedios de mercado.</p>
+      </div>
+    </aside>
+  </div>
+
+  <footer>
+    Fuentes: Superfinanciera (SOAT 2026), Grupo R5 vía Bloomberg Línea (tecnomecánica 2026), precios de referencia de combustibles de noviembre 2026. El impuesto vehicular cambia según el departamento y el avalúo oficial; aquí se calcula con tarifas aproximadas.
+  </footer>
+</div>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const fmt = n => '$' + Math.round(n).toLocaleString('es-CO');
+  const num = s => Number(String(s||'').replace(/[^\d]/g,'')) || 0;
+  const AHORA = 2026;
+
+  // Precios por galón, noviembre 2026
+  const GAS = {bogota:16331, medellin:16251, cali:16339, barranquilla:15964, otra:16200};
+  const ACPM = {bogota:11616, medellin:11641, cali:11763, barranquilla:11291, otra:11600};
+  const EXTRA_PLUS = 4300;      // extra sobre corriente (aprox)
+  const KWH = 900;              // $/kWh residencial aprox
+  const GNV_FACTOR = 0.55;      // GNV ≈ 55% del costo de gasolina por km
+
+  function soat(tipo, cc, edad, comb){
+    let v;
+    if (tipo==='moto'){
+      v = cc<100 ? 256240 : cc<=200 ? 343336 : 770000;   // >200cc aprox
+    } else {
+      v = cc<1500 ? 442440 : cc<=2500 ? 540000 : 640000; // >1500cc aprox
+      if (edad>9) v *= 1.22;                              // más de 9 años, aprox
+    }
+    if (comb==='electrico') v *= 0.9;                    // descuento eléctricos aprox
+    return v;
+  }
+  function tecno(tipo, edad, comb){
+    // carros particulares desde los 5 años; motos desde los 2
+    if (tipo==='carro' && edad<5) return 0;
+    if (tipo==='moto' && edad<2) return 0;
+    if (tipo==='carro') return edad<=7 ? 342491 : edad<=16 ? 342791 : 342491;
+    return edad<=7 ? 232636 : edad<=16 ? 232936 : 232636;
+  }
+  function impuesto(tipo, cc, valor, comb){
+    if (tipo==='moto'){ if (cc<=125) return 0; return valor*0.015; }
+    let t = valor<60e6 ? 0.015 : valor<135e6 ? 0.025 : 0.035;
+    if (comb==='electrico'||comb==='hibrido') t = Math.min(t,0.01);
+    return valor*t;
+  }
+  function kmPorGalon(tipo, cc){
+    if (tipo==='moto') return cc<=150 ? 110 : cc<=400 ? 75 : 45;
+    return cc<1300 ? 48 : cc<1700 ? 40 : cc<2500 ? 32 : 24;
+  }
+  function energiaPorKm(tipo, cc, comb, ciudad){
+    const kpg = kmPorGalon(tipo, cc);
+    const gas = GAS[ciudad];
+    switch(comb){
+      case 'extra': return (gas+EXTRA_PLUS)/kpg;
+      case 'diesel': return ACPM[ciudad]/(kpg*1.2);
+      case 'gnv': return gas/kpg*GNV_FACTOR;
+      case 'hibrido': return gas/(kpg*1.6);
+      case 'electrico': return (tipo==='moto'?0.045:0.16)*KWH;
+      default: return gas/kpg;
+    }
+  }
+  function valorEstimado(tipo, edad){
+    const nuevo = tipo==='moto' ? 11e6 : 85e6;
+    return Math.max(nuevo*Math.pow(0.88, edad), tipo==='moto'?1.5e6:12e6);
+  }
+
+  function leer(){
+    const tipo = document.querySelector('input[name=tipo]:checked').value;
+    const anio = Number($('anio').value)||AHORA;
+    return {
+      tipo, anio, edad: Math.max(0, AHORA - anio),
+      cc: Number($('cc').value)||(tipo==='moto'?150:1400),
+      comb: $('comb').value, ciudad: $('ciudad').value,
+      km: Number(document.querySelector('input[name=uso]:checked').value),
+      valorIn: num($('valor').value),
+      parq: num($('parq').value),
+      seguro: $('seguro').checked,
+      lava: $('lava').checked, lavaVal: num($('lavaVal').value), lavaFreq: Number($('lavaFreq').value),
+      ingreso: num($('ingreso').value),
+      marca: $('marca').value.trim(), modelo: $('modelo').value.trim()
+    };
+  }
+
+  function calcular(){
+    const d = leer();
+    $('lavaBox').hidden = !d.lava;
+    const valor = d.valorIn || valorEstimado(d.tipo, d.edad);
+    const eKm = energiaPorKm(d.tipo, d.cc, d.comb, d.ciudad);
+    const mantKm = d.tipo==='moto' ? 110 : (d.comb==='electrico' ? 120 : 210);
+
+    const items = [
+      {n: d.comb==='electrico' ? 'Energía (carga)' : 'Combustible', v: eKm*d.km, tag: Math.round(d.km).toLocaleString('es-CO')+' km/mes'},
+      {n:'Mantenimiento y llantas', v: mantKm*d.km + (d.tipo==='moto'?15000:40000), tag:'aceite, frenos, llantas, imprevistos'},
+      {n:'SOAT', v: soat(d.tipo,d.cc,d.edad,d.comb)/12, tag:'anual ÷ 12'},
+      {n:'Tecnomecánica', v: tecno(d.tipo,d.edad,d.comb)/12, tag: tecno(d.tipo,d.edad,d.comb)?'anual ÷ 12':'aún no aplica por la edad'},
+      {n:'Impuesto vehicular', v: impuesto(d.tipo,d.cc,valor,d.comb)/12, tag: (d.tipo==='moto'&&d.cc<=125)?'motos hasta 125 cc no pagan':'anual ÷ 12, aprox'},
+      {n:'Seguro todo riesgo', v: d.seguro ? valor*(d.tipo==='moto'?0.06:0.035)/12 : 0, tag: d.seguro?'anual ÷ 12, aprox':'no incluido'},
+      {n:'Parqueadero', v: d.parq, tag:'mensual'},
+      {n:'Lavadas', v: d.lava ? d.lavaVal*d.lavaFreq : 0, tag: d.lava ? $('lavaFreq').selectedOptions[0].text.toLowerCase() : 'no incluido'}
+    ];
+    const total = items.reduce((s,i)=>s+i.v,0);
+    const max = Math.max(...items.map(i=>i.v),1);
+
+    $('rows').innerHTML = items.map(i=>`
+      <div class="row">
+        <span>${i.n}<br><span class="tag">${i.tag}</span></span>
+        <span class="v">${fmt(i.v)}</span>
+        <span class="bar"><i style="width:${(i.v/max*100).toFixed(1)}%"></i></span>
+      </div>`).join('');
+
+    const nombre = [d.marca,d.modelo].filter(Boolean).join(' ');
+    $('resTitle').textContent = nombre ? `Tu ${nombre} ${d.anio} te cuesta al mes` : 'Te cuesta al mes';
+    $('tMes').textContent = fmt(total);
+    $('tAnio').textContent = fmt(total*12) + ' al año' + (d.valorIn ? '' : ' · valor comercial estimado: ' + fmt(valor));
+    const ganar = total/0.15;
+    $('ganar').textContent = fmt(ganar) + ' al mes';
+    $('pierde').textContent = fmt(valor*(d.edad<3?0.15:0.10)/12);
+    $('km').textContent = fmt(total/Math.max(d.km,1));
+
+    if (d.ingreso){
+      const pct = total/d.ingreso*100;
+      const p = $('pill');
+      $('incomeBox').hidden = false;
+      if (pct<=15){p.className='pill ok';p.textContent='Te alcanza';}
+      else if (pct<=25){p.className='pill mid';p.textContent='Justo';}
+      else {p.className='pill no';p.textContent='Te aprieta';}
+      $('incomeTxt').textContent = `El vehículo se lleva el ${pct.toFixed(0)}% de tu ingreso. Lo sano es 15% o menos.`;
+    } else $('incomeBox').hidden = true;
+  }
+
+  // Formato de miles mientras escribe
+  document.querySelectorAll('.money input').forEach(inp=>{
+    inp.addEventListener('input',()=>{
+      const n = num(inp.value);
+      inp.value = n ? n.toLocaleString('es-CO') : '';
+    });
+  });
+  // Al cambiar a moto, ajusta ejemplos razonables una sola vez
+  document.querySelectorAll('input[name=tipo]').forEach(r=>r.addEventListener('change',()=>{
+    if (r.value==='moto' && r.checked && $('marca').value==='Mazda'){
+      $('marca').value='Yamaha'; $('modelo').value='FZ 2.0'; $('cc').value=149; $('valor').value='8.500.000';
+      $('parq').value='45.000'; $('seguro').checked=false; $('lavaVal').value='10.000';
+    }
+  }));
+  const f = $('f');
+  f.addEventListener('input', ()=>{ $('exNote').hidden = true; calcular(); });
+  f.addEventListener('change', calcular);
+  f.addEventListener('submit', e=>{ e.preventDefault(); calcular(); });
+  calcular();
+})();
+</script>
+
+</body>
+</html>
