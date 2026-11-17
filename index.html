@@ -124,6 +124,32 @@ footer a{color:var(--verde)}
 .ph-empty:hover .play{background:var(--naranja);color:var(--blanco)}
 .v-txt h2{margin-bottom:12px}
 .v-txt .lead{margin-bottom:20px}
+.dl{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.9fr);gap:clamp(24px,5vw,48px);align-items:center;background:var(--menta);border:1px solid var(--rejilla);padding:clamp(24px,5vw,48px)}
+@media (max-width:760px){.dl{grid-template-columns:minmax(0,1fr)}}
+.dl h2{margin-bottom:10px}
+.dl .lead{margin-bottom:20px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.dl-form{display:flex;flex-wrap:wrap;gap:0;max-width:520px}
+.dl-form input{flex:1 1 220px;min-width:0;font-family:var(--f-mono);font-size:15px;padding:14px 16px;border:2px solid var(--verde);border-right:0;background:var(--blanco);color:var(--tinta);border-radius:0}
+.dl-form input:focus{outline:none;box-shadow:inset 0 0 0 1px var(--verde)}
+.dl-form .btn{flex:0 0 auto;cursor:pointer;font-family:var(--f-display)}
+@media (max-width:440px){.dl-form input{border-right:2px solid var(--verde);border-bottom:0;flex-basis:100%}.dl-form .btn{flex:1 1 100%;justify-content:center}}
+.dl-msg{margin:10px 0 0;font-size:14px;font-weight:600;min-height:1.5em}
+.dl-msg.err{color:var(--naranja)}
+.dl-msg.ok{color:var(--verde)}
+.dl-note{margin:4px 0 0;font-size:12px;color:var(--muted)}
+.mini-sheet{position:relative;background:var(--blanco);border:1px solid var(--rejilla);font-family:var(--f-mono);font-size:13px;overflow-x:auto}
+.ms-bar{display:flex;gap:10px;padding:8px 10px;border-bottom:1px solid var(--rejilla);color:var(--muted);white-space:nowrap}
+.ms-bar i{font-family:Georgia,serif}
+.ms-bar span:last-child{color:var(--tinta)}
+.mini-sheet table{width:100%;border-collapse:collapse}
+.mini-sheet th,.mini-sheet td{border:1px solid var(--rejilla);padding:8px 10px;text-align:left;white-space:nowrap}
+.mini-sheet th{background:#F2F4F2;color:var(--muted);font-weight:500;text-align:center}
+.mini-sheet td:first-child{background:#F2F4F2;color:var(--muted);text-align:center;width:36px}
+.mini-sheet .n{text-align:right;font-variant-numeric:tabular-nums}
+.mini-sheet tr.sel td:not(:first-child){background:var(--amarillo)}
+.mini-sheet tr.sel td:last-child{box-shadow:inset 0 0 0 2px var(--verde)}
+.ms-ex{position:absolute;top:8px;right:10px;font-size:11px;color:var(--verde);background:var(--menta);padding:1px 6px}
 </style>
 <style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
@@ -198,6 +224,33 @@ footer a{color:var(--verde)}
       <div class="person"><div class="av" aria-hidden="true">P</div><div><b>Pedro</b><span>Método R.E.N.T.A</span></div></div>
     </div>
   </section>
+
+  <section class="dl" id="sheet">
+    <div class="dl-txt">
+      <p class="sec-lbl">Gratis</p>
+      <h2>Descarga nuestro sheet.</h2>
+      <p class="lead">La hoja que usamos para ordenar la plata: ingresos, gastos y metas en un solo lugar. Déjanos tu correo y te la enviamos.</p>
+      <form class="dl-form" id="dlForm" novalidate>
+        <label for="dlEmail" class="sr">Tu correo</label>
+        <input type="email" id="dlEmail" name="email" placeholder="tucorreo@gmail.com" autocomplete="email" required>
+        <button type="submit" class="btn primary">Envíamelo</button>
+      </form>
+      <p class="dl-msg" id="dlMsg" role="status"></p>
+      <p class="dl-note">Te suscribimos a nuestro boletín en Substack. Puedes salirte cuando quieras.</p>
+    </div>
+    <div class="mini-sheet" aria-hidden="true">
+      <div class="ms-bar"><span>A1</span><i>fx</i><span>=DESCARGAR("Hoja R.E.N.T.A")</span></div>
+      <table>
+        <tr><th></th><th>A</th><th>B</th></tr>
+        <tr><td>1</td><td>Ingresos</td><td class="n">$4.500.000</td></tr>
+        <tr><td>2</td><td>Gastos fijos</td><td class="n">$2.100.000</td></tr>
+        <tr><td>3</td><td>Gastos variables</td><td class="n">$1.200.000</td></tr>
+        <tr><td>4</td><td>Ahorro</td><td class="n">$700.000</td></tr>
+        <tr class="sel"><td>5</td><td><b>Te sobra</b></td><td class="n"><b>$500.000</b></td></tr>
+      </table>
+      <span class="ms-ex">Ejemplo</span>
+    </div>
+  </section>
 </main>
 
 <div class="band"><div class="in">
@@ -247,6 +300,30 @@ const TIKTOK_VIDEO = "";
   f.loading = 'lazy';
   document.getElementById('tkEmpty').hidden = true;
   document.getElementById('tkBox').appendChild(f);
+})();
+</script>
+
+<script>
+// SHEET: el formulario suscribe el correo a Substack (abre la página de suscripción con el correo ya puesto).
+// El sheet se envía desde el correo de bienvenida de Substack.
+(function(){
+  const SUBSTACK = "https://metodorenta.substack.com";
+  const form = document.getElementById('dlForm'), input = document.getElementById('dlEmail'), msg = document.getElementById('dlMsg');
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    const email = input.value.trim();
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+      msg.className = 'dl-msg err';
+      msg.textContent = 'Revisa tu correo: parece que le falta algo.';
+      input.focus();
+      return;
+    }
+    const url = SUBSTACK + '/subscribe?email=' + encodeURIComponent(email);
+    const w = window.open(url, '_blank', 'noopener');
+    msg.className = 'dl-msg ok';
+    msg.innerHTML = w ? 'Confirma la suscripción en la pestaña que se abrió y te llega el sheet a tu correo.'
+                      : 'Toca <a href="' + url + '" target="_blank" rel="noopener">aquí</a> para confirmar y te llega el sheet a tu correo.';
+  });
 })();
 </script>
 
