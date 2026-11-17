@@ -97,6 +97,17 @@ button.calc:hover{background:var(--tinta)}
 .example{font-family:var(--f-mono);font-size:11px;color:var(--verde);background:var(--menta);padding:5px 10px;align-self:flex-start}
 footer{margin-top:28px;font-size:12px;color:var(--muted);max-width:75ch;background:var(--blanco);padding:14px;border:1px solid var(--line)}
 @media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+
+/* Clic más evidente */
+button.calc{box-shadow:5px 5px 0 var(--tinta);transition:transform .12s,box-shadow .12s}
+button.calc:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--tinta)}
+button.calc:active{transform:translate(3px,3px);box-shadow:2px 2px 0 var(--tinta)}
+.seg{border-width:2px;border-color:var(--verde);background:var(--verde)}
+.seg label{cursor:pointer}
+.seg label:not(:has(input:checked)):hover{background:var(--menta);color:var(--verde)}
+.check{cursor:pointer}
+.check input{width:20px;height:20px;cursor:pointer}
+select{cursor:pointer}
 </style>
 <style>body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>
 </head>
