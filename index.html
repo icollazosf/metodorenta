@@ -49,10 +49,10 @@ h1 em{font-style:normal;color:var(--verde)}
 .mascota img{width:100%;max-width:420px;height:auto;display:block;margin-inline:auto}
 .mascota span{font-family:var(--f-mono);font-size:12px;text-align:center}
 .sheet{background:var(--blanco);border:1px solid var(--rejilla)}
-.sheet .head{display:grid;grid-template-columns:44px repeat(3,minmax(0,1fr));border-bottom:1px solid var(--rejilla);font-family:var(--f-mono);font-size:13px;color:var(--muted);background:#F2F4F2}
+.sheet .head{display:grid;grid-template-columns:44px repeat(4,minmax(0,1fr));border-bottom:1px solid var(--rejilla);font-family:var(--f-mono);font-size:13px;color:var(--muted);background:#F2F4F2}
 .sheet .head span{padding:8px;text-align:center;border-left:1px solid var(--rejilla)}
 .sheet .head span:first-child{border-left:0}
-.sheet .rowx{display:grid;grid-template-columns:44px repeat(3,minmax(0,1fr))}
+.sheet .rowx{display:grid;grid-template-columns:44px repeat(4,minmax(0,1fr))}
 .sheet .num{font-family:var(--f-mono);font-size:13px;color:var(--muted);background:#F2F4F2;display:flex;align-items:center;justify-content:center;border-right:1px solid var(--rejilla)}
 .svc{padding:24px;display:flex;flex-direction:column;gap:10px;border-left:1px solid var(--rejilla);min-width:0}
 .svc:nth-child(2){border-left:0}
@@ -63,11 +63,11 @@ h1 em{font-style:normal;color:var(--verde)}
 .svc h3{margin:0;font-size:22px;font-weight:700;letter-spacing:-.01em}
 .svc p{margin:0;color:var(--muted);font-size:15px}
 .svc code{font-family:var(--f-mono);font-size:12px;color:var(--verde)}
-@media (max-width:720px){
+@media (max-width:900px){
   .sheet .head{grid-template-columns:44px minmax(0,1fr)}
   .sheet .head span:nth-child(n+3){display:none}
   .sheet .rowx{grid-template-columns:44px minmax(0,1fr)}
-  .sheet .num{grid-row:1/4}
+  .sheet .num{grid-row:1/5}
   .svc{border-left:0;border-top:1px solid var(--rejilla)}
   .svc:nth-child(2){border-top:0}
 }
@@ -180,6 +180,16 @@ footer a{color:var(--verde)}
 @keyframes nudge{0%,80%,100%{transform:none}86%{transform:translate(-2px,-2px) rotate(-1deg)}92%{transform:translate(-2px,-2px) rotate(1deg)}}
 @keyframes pulse{0%,100%{box-shadow:5px 5px 0 var(--blanco),0 0 0 0 rgba(246,207,58,.6)}50%{box-shadow:5px 5px 0 var(--blanco),0 0 0 14px rgba(246,207,58,0)}}
 .btn.wa:hover{animation:none}
+.svc .more{font-weight:700;color:var(--verde);text-decoration:none;border-bottom:2px solid var(--verde);align-self:flex-start}
+.svc .more:hover{background:var(--menta)}
+.svc-ia{text-decoration:none;color:var(--tinta);background:var(--menta);box-shadow:inset 0 0 0 3px var(--verde);position:relative;cursor:pointer;transition:background .15s}
+.svc-ia::after{content:"";position:absolute;right:-6px;bottom:-6px;width:11px;height:11px;background:var(--verde);border:2px solid var(--blanco)}
+.svc-ia .ic{background:var(--verde);color:var(--blanco);font-size:16px}
+.svc-ia p{color:var(--tinta)}
+.svc-ia .more{font-weight:700;color:var(--verde);border-bottom:2px solid var(--verde);align-self:flex-start}
+.svc-ia:hover{background:#cdeedb}
+.svc-ia:hover .more{color:var(--tinta);border-color:var(--tinta)}
+.svc-ia:focus-visible{outline:3px solid var(--amarillo);outline-offset:2px}
 </style>
 <style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
@@ -219,14 +229,15 @@ footer a{color:var(--verde)}
 
   <section>
     <p class="sec-lbl">Lo que hacemos</p>
-    <h2>Tres hojas, un mismo método.</h2>
+    <h2>Cuatro hojas, un mismo método.</h2>
     <div class="sheet">
-      <div class="head" aria-hidden="true"><span></span><span>A</span><span>B</span><span>C</span></div>
+      <div class="head" aria-hidden="true"><span></span><span>A</span><span>B</span><span>C</span><span>D</span></div>
       <div class="rowx">
         <div class="num" aria-hidden="true">1</div>
         <article class="svc"><div class="ic">$</div><h3>Finanzas personales</h3><p>Tu presupuesto, tus deudas y tus metas en un solo lugar.</p><code>=A1</code></article>
         <article class="svc"><div class="ic">%</div><h3>Negocios</h3><p>Separa la plata del negocio de la tuya y entiende cuánto ganas de verdad.</p><code>=B1</code></article>
         <article class="svc"><div class="ic">+</div><h3>Parejas</h3><p>Hablen de plata sin pelear y armen un plan que funcione para los dos.</p><code>=C1</code></article>
+        <a class="svc svc-ia" href="ia.html"><div class="ic">IA</div><h3>IA para tu negocio</h3><p>Usa la inteligencia artificial para ahorrar tiempo y tener tus números claros.</p><span class="more">Ver cómo funciona →</span><code>=D1</code></a>
       </div>
     </div>
   </section>
@@ -296,7 +307,7 @@ footer a{color:var(--verde)}
 
 <footer><div class="in">
   <span>Método R.E.N.T.A · Marca colombiana · 2026 · <a href="https://www.instagram.com/metodorenta/" target="_blank" rel="noopener">Instagram</a> · <a href="https://www.tiktok.com/@metodorenta" target="_blank" rel="noopener">TikTok</a> · @metodorenta</span>
-  <span class="mono">Finanzas personales · Negocios · Parejas</span>
+  <span class="mono">Finanzas personales · Negocios · Parejas · <a href="ia.html">IA</a></span>
 </div></footer>
 
 <script>
