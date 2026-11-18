@@ -2,6 +2,20 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="theme-color" content="#12754A">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_CO">
+<meta property="og:site_name" content="Método R.E.N.T.A">
+<meta property="og:title" content="¿Te alcanza para ese carro? · Método R.E.N.T.A">
+<meta property="og:description" content="Calcula cuánto te cuesta de verdad tener tu carro o tu moto y cuánto deberías ganar.">
+<meta property="og:url" content="https://metodo-renta.com/calculadora.html">
+<meta property="og:image" content="https://metodo-renta.com/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="canonical" href="https://metodo-renta.com/calculadora.html">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Calculadora de Método R.E.N.T.A: cuánto te cuesta de verdad tener tu carro o tu moto y cuánto deberías ganar para mantenerlo.">
@@ -109,14 +123,21 @@ button.calc:active{transform:translate(3px,3px);box-shadow:2px 2px 0 var(--tinta
 .check{cursor:pointer}
 .check input{width:20px;height:20px;cursor:pointer}
 select{cursor:pointer}
+.home{display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:15px;color:var(--verde);text-decoration:none;border:2px solid var(--verde);padding:8px 14px;background:var(--blanco);box-shadow:4px 4px 0 var(--tinta);transition:transform .12s,box-shadow .12s}
+.home:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--tinta);background:var(--menta)}
+.home:active{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--tinta)}
+.home:focus-visible{outline:3px solid var(--amarillo);outline-offset:2px}
+@media (max-width:560px){.topbar .formula{display:none}}
+.end{display:flex;justify-content:center;margin-top:28px}
 </style>
 <style>body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>
 </head>
 <body>
 
 <div class="topbar"><div class="in">
-  <span class="logo" aria-label="Método R.E.N.T.A"><span class="m">MÉTODO</span><span class="box">R.E.N.T.A</span></span>
+  <a class="logo" href="index.html" aria-label="Método R.E.N.T.A, ir al inicio"><span class="m">MÉTODO</span><span class="box">R.E.N.T.A</span></a>
   <div class="formula" aria-hidden="true"><span class="ref">B2</span><span class="fx">fx</span><span class="f">=SOAT+GASOLINA+MANTENIMIENTO+…</span></div>
+  <a class="home" href="index.html">← Volver al inicio</a>
 </div></div>
 <div class="wrap">
   <header>
@@ -237,8 +258,11 @@ select{cursor:pointer}
     </aside>
   </div>
 
+  <div class="end"><a class="home" href="index.html">← Volver al inicio</a></div>
+
   <footer>
     Método R.E.N.T.A · Fuentes: Superfinanciera (SOAT 2026), Grupo R5 vía Bloomberg Línea (tecnomecánica 2026), precios de referencia de combustibles de noviembre 2026. El impuesto vehicular cambia según el departamento y el avalúo oficial; aquí se calcula con tarifas aproximadas.
+    <p class="disc" style="margin-top:10px">Método R.E.N.T.A ofrece educación financiera. No somos asesores de inversión vigilados por la Superintendencia Financiera. <a href="index.html" style="color:var(--verde);font-weight:600">Volver al inicio</a> · <a href="privacidad.html" style="color:var(--verde)">Tratamiento de datos</a></p>
   </footer>
 </div>
 
